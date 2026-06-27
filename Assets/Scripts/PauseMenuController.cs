@@ -19,7 +19,8 @@ public class PauseMenuController : MonoBehaviour
     [SerializeField] InputActionAsset uiInputActions;
 
     [Header("Restart")]
-    [SerializeField] Vector2 playerSpawnPosition = new Vector2(600f, -248f);
+    [SerializeField] Vector2 playerSpawnPosition;
+    [SerializeField] bool restartLoadsHubScene = false;
 
     bool isPaused;
     bool spawnCaptured;
@@ -32,19 +33,23 @@ public class PauseMenuController : MonoBehaviour
         EnsureOverlay();
         HidePauseMenu();
         BindButtons();
-    }
-
-    void Start()
-    {
         CaptureSpawnPosition();
     }
 
     void Update()
     {
+        if (IsDeathBlockingInput())
+            return;
+
         if (Keyboard.current == null || !Keyboard.current.escapeKey.wasPressedThisFrame)
             return;
 
         HandleEscapePressed();
+    }
+
+    bool IsDeathBlockingInput()
+    {
+        return LevelDeathController.Instance != null && LevelDeathController.Instance.IsDead;
     }
 
     void HandleEscapePressed()
@@ -64,9 +69,11 @@ public class PauseMenuController : MonoBehaviour
             return;
 
         var player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
-            playerSpawnPosition = player.transform.position;
+        if (player == null)
+            return;
 
+        var rb = player.GetComponent<Rigidbody2D>();
+        playerSpawnPosition = rb != null ? rb.position : player.transform.position;
         spawnCaptured = true;
     }
 
@@ -110,6 +117,16 @@ public class PauseMenuController : MonoBehaviour
         var target = GameObject.Find(objectName);
         return target != null ? target.GetComponent<Button>() : null;
     }
+
+    public void EnsureUiReady()
+    {
+        EnsureEventSystem();
+        EnsureCanvasCamera();
+    }
+
+    public InputActionAsset GetUiInputActions() => uiInputActions;
+
+    public Image GetPauseOverlay() => pauseOverlay;
 
     void EnsureEventSystem()
     {
@@ -175,10 +192,19 @@ public class PauseMenuController : MonoBehaviour
 
     void TogglePauseMenu()
     {
+        if (IsDeathBlockingInput())
+            return;
+
         if (isPaused)
             ResumeGame();
         else
             OpenPauseMenu();
+    }
+
+    public void ForceClosePauseMenu()
+    {
+        isPaused = false;
+        HidePauseMenu();
     }
 
     void OpenPauseMenu()
@@ -251,6 +277,12 @@ public class PauseMenuController : MonoBehaviour
 
     void RestartHub()
     {
+        if (restartLoadsHubScene)
+        {
+            SceneNav.LoadHub();
+            return;
+        }
+
         Time.timeScale = 1f;
         isPaused = false;
 
@@ -264,7 +296,10 @@ public class PauseMenuController : MonoBehaviour
                 rb.angularVelocity = 0f;
             }
 
-            player.transform.position = playerSpawnPosition;
+            if (rb != null)
+                rb.position = playerSpawnPosition;
+            else
+                player.transform.position = playerSpawnPosition;
 
             var stats = player.GetComponent<CharacterStats>();
             if (stats != null)

@@ -1414,8 +1414,8 @@ MonoBehaviour:
   upgradeType: 2
   initialCost: 10
   costGrowth: 2
-  initialBonus: 100
-  bonusGrowth: 1
+  initialBonus: 2
+  bonusGrowth: 2
 --- !u!1 &208922478
 GameObject:
   m_ObjectHideFlags: 0
@@ -9880,7 +9880,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1338335768
 RectTransform:
   m_ObjectHideFlags: 0

@@ -45,6 +45,11 @@ public static class PlayerProgress
         return true;
     }
 
+    public static void ResetDiamonds()
+    {
+        Diamonds = 0;
+    }
+
     public static int GetShopUpgradeLevel(ShopUpgradeType type)
     {
         return PlayerPrefs.GetInt(ShopUpgradeKey(type), 0);

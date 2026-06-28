@@ -316,6 +316,7 @@ public class PauseMenuController : MonoBehaviour
         isPaused = false;
 
         ChestController.ResetAllForNewRun();
+        MinotaurBossEncounter.ResetForNewRun();
 
         var player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)

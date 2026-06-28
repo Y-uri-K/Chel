@@ -43,6 +43,8 @@ public class CharacterStats : MonoBehaviour
     public float MagicalAttackMultiplier => magicalAttackPercent / 100f;
     public float CritDamageMultiplier => critDamagePercent / 100f;
 
+    public int Diamonds => PlayerProgress.Diamonds;
+
     public event Action<CharacterStats> OnHealthChanged;
     public event Action<CharacterStats> OnStatsChanged;
     public event Action<CharacterStats> OnDeath;
@@ -138,4 +140,17 @@ public class CharacterStats : MonoBehaviour
         currentHealth = maxHealth;
         OnHealthChanged?.Invoke(this);
     }
+
+    public void ResetMoney()
+    {
+        PlayerProgress.ResetDiamonds();
+    }
+
+#if UNITY_EDITOR
+    [ContextMenu("Reset Money To 0")]
+    void ResetMoneyContextMenu()
+    {
+        ResetMoney();
+    }
+#endif
 }

@@ -163,6 +163,8 @@ public class LevelDeathController : MonoBehaviour
         isDead = true;
         Time.timeScale = 0f;
 
+        ChestController.ResetAllForNewRun();
+
         var pauseMenu = GetComponent<PauseMenuController>();
         if (pauseMenu != null)
             pauseMenu.ForceClosePauseMenu();

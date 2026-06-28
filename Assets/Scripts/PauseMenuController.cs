@@ -52,8 +52,19 @@ public class PauseMenuController : MonoBehaviour
         return LevelDeathController.Instance != null && LevelDeathController.Instance.IsDead;
     }
 
+    bool IsCharacteristicsBlockingInput()
+    {
+        return CharacteristicsPanelController.Instance != null && CharacteristicsPanelController.Instance.IsOpen;
+    }
+
     void HandleEscapePressed()
     {
+        if (IsCharacteristicsBlockingInput())
+        {
+            CharacteristicsPanelController.Instance.ForceClosePanel();
+            return;
+        }
+
         if (optionsMenu != null && optionsMenu.activeSelf)
         {
             CloseOptionsImmediate();
@@ -192,7 +203,7 @@ public class PauseMenuController : MonoBehaviour
 
     void TogglePauseMenu()
     {
-        if (IsDeathBlockingInput())
+        if (IsDeathBlockingInput() || IsCharacteristicsBlockingInput())
             return;
 
         if (isPaused)
@@ -211,6 +222,9 @@ public class PauseMenuController : MonoBehaviour
     {
         if (isPaused)
             return;
+
+        if (CharacteristicsPanelController.Instance != null)
+            CharacteristicsPanelController.Instance.ForceClosePanel();
 
         isPaused = true;
         Time.timeScale = 0f;
@@ -285,6 +299,8 @@ public class PauseMenuController : MonoBehaviour
 
         Time.timeScale = 1f;
         isPaused = false;
+
+        ChestController.ResetAllForNewRun();
 
         var player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)

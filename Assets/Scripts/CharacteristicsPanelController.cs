@@ -153,6 +153,8 @@ public class CharacteristicsPanelController : MonoBehaviour
         if (characteristicsPanel != null)
             characteristicsPanel.SetActive(true);
 
+        RefreshPanelStats();
+
         if (itemsButton != null)
             itemsButton.interactable = false;
     }
@@ -174,6 +176,16 @@ public class CharacteristicsPanelController : MonoBehaviour
     {
         if (characteristicsPanel != null)
             characteristicsPanel.SetActive(false);
+    }
+
+    void RefreshPanelStats()
+    {
+        if (characteristicsPanel == null)
+            return;
+
+        var view = characteristicsPanel.GetComponentInChildren<CharacteristicsPanelView>(true);
+        if (view != null)
+            view.Refresh();
     }
 
     bool IsBlocked()

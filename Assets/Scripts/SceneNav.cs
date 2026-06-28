@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 public static class SceneNav
 {
     public const string HubSceneName = "Hub";
+    public const string MenuSceneName = "menu";
     public const string Level1SceneName = "level1";
     public const string Level3BossSceneName = "level 3 boss";
 
@@ -11,6 +12,12 @@ public static class SceneNav
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene(HubSceneName);
+    }
+
+    public static void LoadMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(MenuSceneName);
     }
 
     public static void LoadLevel(string sceneName)

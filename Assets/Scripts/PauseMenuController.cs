@@ -51,7 +51,10 @@ public class PauseMenuController : MonoBehaviour
 
     bool IsDeathBlockingInput()
     {
-        return LevelDeathController.Instance != null && LevelDeathController.Instance.IsDead;
+        if (LevelDeathController.Instance != null && LevelDeathController.Instance.IsDead)
+            return true;
+
+        return LevelWinController.Instance != null && LevelWinController.Instance.HasWon;
     }
 
     bool IsCharacteristicsBlockingInput()

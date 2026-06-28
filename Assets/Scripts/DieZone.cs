@@ -14,8 +14,10 @@ public class DieZone : MonoBehaviour
         if (!other.CompareTag("Player"))
             return;
 
-        var deathController = LevelDeathController.Instance;
-        if (deathController != null)
-            deathController.HandlePlayerDeath();
+        var stats = other.GetComponentInParent<CharacterStats>();
+        if (stats == null || stats.CurrentHealth <= 0)
+            return;
+
+        stats.TakeDamage(stats.CurrentHealth);
     }
 }

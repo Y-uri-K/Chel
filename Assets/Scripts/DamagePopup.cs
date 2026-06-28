@@ -32,7 +32,7 @@ public class DamagePopup : MonoBehaviour
         tmp.fontStyle = FontStyles.Bold;
         tmp.font = _font;
         tmp.outlineWidth = 0.25f;
-        tmp.outlineColor = Color.white;
+        tmp.outlineColor = color.grayscale > 0.85f ? Color.black : Color.white;
 
         // Рендеринг без пиксельности
         var mr = go.GetComponent<MeshRenderer>();

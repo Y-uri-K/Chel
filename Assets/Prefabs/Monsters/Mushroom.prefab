@@ -144,6 +144,8 @@ MonoBehaviour:
   speedPerLevel: 0.05
   rangePerLevel: 0.03
   level: 1
+  diamondReward: 10
+  hitSound: {fileID: 8300000, guid: d95a8e356abf1f54ea07aaa97f18a307, type: 3}
   hitsToActivateImmune: 999
   hitsToDeactivateImmune: 999
 --- !u!114 &8231253909237201992

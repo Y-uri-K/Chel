@@ -37,6 +37,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] LayerMask monsterMask = ~0;
     [SerializeField] AudioClip hitSound1;
     [SerializeField] AudioClip hitSound2;
+    [SerializeField] AudioClip killSound;
 
     [Header("Movement SFX")]
     [SerializeField] AudioClip dashSound;
@@ -81,7 +82,13 @@ public class PlayerController : MonoBehaviour
     int attackIndex;
     bool wasGrounded;
     PlayerState currentAnimState = PlayerState.IDLE;
+    int lastHealth;
+    bool isHurt;
+    bool isDead;
+    Coroutine hurtRoutine;
+    Coroutine deathRoutine;
 
+    public bool IsDead => isDead;
     public bool IsGrounded => isGrounded;
     public float VerticalVelocity => rb != null ? rb.linearVelocity.y : 0f;
 
@@ -119,6 +126,47 @@ public class PlayerController : MonoBehaviour
     {
         wasGrounded = CheckGrounded();
         isGrounded = wasGrounded;
+
+        if (characterStats != null)
+            lastHealth = characterStats.CurrentHealth;
+    }
+
+    void OnEnable()
+    {
+        moveAction?.Enable();
+        jumpAction?.Enable();
+        attackAction?.Enable();
+        dashAction?.Enable();
+
+        if (characterStats != null)
+        {
+            characterStats.OnHealthChanged += HandleHealthChanged;
+            characterStats.OnDeath += HandleDeath;
+        }
+
+        GameSettings.SettingsChanged += HandleSettingsChanged;
+    }
+
+    void OnDisable()
+    {
+        moveAction?.Disable();
+        jumpAction?.Disable();
+        attackAction?.Disable();
+        dashAction?.Disable();
+
+        if (characterStats != null)
+        {
+            characterStats.OnHealthChanged -= HandleHealthChanged;
+            characterStats.OnDeath -= HandleDeath;
+        }
+
+        GameSettings.SettingsChanged -= HandleSettingsChanged;
+    }
+
+    void HandleSettingsChanged()
+    {
+        if (runLoopSource != null && runLoopSource.isPlaying)
+            runLoopSource.volume = GameSettings.GetEffectiveSfxVolume();
     }
 
     void SetupSfxSource()
@@ -145,10 +193,10 @@ public class PlayerController : MonoBehaviour
 
     void PlaySfx(AudioClip clip)
     {
-        if (sfxSource == null || clip == null)
+        if (clip == null)
             return;
 
-        sfxSource.PlayOneShot(clip, GameSettings.GetEffectiveSfxVolume());
+        SfxPlayer.Play(clip);
     }
 
     void ApplyBodyCollider()
@@ -197,22 +245,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void OnEnable()
-    {
-        moveAction?.Enable();
-        jumpAction?.Enable();
-        attackAction?.Enable();
-        dashAction?.Enable();
-    }
-
-    void OnDisable()
-    {
-        moveAction?.Disable();
-        jumpAction?.Disable();
-        attackAction?.Disable();
-        dashAction?.Disable();
-    }
-
     void BindInputActions()
     {
         if (inputActions == null)
@@ -223,6 +255,143 @@ public class PlayerController : MonoBehaviour
         jumpAction = map.FindAction("Jump");
         attackAction = map.FindAction("Attack");
         dashAction = map.FindAction("Sprint");
+    }
+
+    void HandleHealthChanged(CharacterStats stats)
+    {
+        if (isDead || stats.CurrentHealth <= 0)
+        {
+            lastHealth = stats.CurrentHealth;
+            return;
+        }
+
+        if (stats.CurrentHealth < lastHealth)
+            PlayHurtAnimation();
+
+        lastHealth = stats.CurrentHealth;
+    }
+
+    void HandleDeath(CharacterStats _)
+    {
+        if (isDead || deathRoutine != null)
+            return;
+
+        deathRoutine = StartCoroutine(DeathRoutine());
+    }
+
+    void PlayHurtAnimation()
+    {
+        if (isDead || isHurt)
+            return;
+
+        if (hurtRoutine != null)
+            StopCoroutine(hurtRoutine);
+
+        hurtRoutine = StartCoroutine(HurtRoutine());
+    }
+
+    IEnumerator HurtRoutine()
+    {
+        isHurt = true;
+
+        if (isDashing)
+            EndDash();
+
+        isAttacking = false;
+        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+
+        if (runLoopSource != null && runLoopSource.isPlaying)
+            runLoopSource.Stop();
+
+        PlaySpumState(PlayerState.DAMAGED, 0);
+        yield return new WaitForSeconds(GetClipDuration(PlayerState.DAMAGED, 0, 0.35f));
+
+        isHurt = false;
+        hurtRoutine = null;
+        currentAnimState = PlayerState.IDLE;
+    }
+
+    IEnumerator DeathRoutine()
+    {
+        isDead = true;
+        isHurt = false;
+        isAttacking = false;
+
+        if (isDashing)
+            EndDash();
+
+        if (hurtRoutine != null)
+        {
+            StopCoroutine(hurtRoutine);
+            hurtRoutine = null;
+        }
+
+        if (runLoopSource != null && runLoopSource.isPlaying)
+            runLoopSource.Stop();
+
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+
+        PlaySpumState(PlayerState.DEATH, 0);
+        yield return new WaitForSeconds(GetClipDuration(PlayerState.DEATH, 0, 0.8f));
+
+        deathRoutine = null;
+        LevelDeathController.Instance?.HandlePlayerDeath();
+    }
+
+    void PlaySpumState(PlayerState state, int index)
+    {
+        if (spum == null || !HasSpumState(state))
+            return;
+
+        index = Mathf.Clamp(index, 0, GetSpumStateCount(state) - 1);
+        spum.PlayAnimation(state, index);
+        currentAnimState = state;
+    }
+
+    bool HasSpumState(PlayerState state)
+    {
+        return GetSpumStateCount(state) > 0;
+    }
+
+    int GetSpumStateCount(PlayerState state)
+    {
+        if (spum == null)
+            return 0;
+
+        return state switch
+        {
+            PlayerState.IDLE => spum.IDLE_List.Count,
+            PlayerState.MOVE => spum.MOVE_List.Count,
+            PlayerState.ATTACK => spum.ATTACK_List.Count,
+            PlayerState.DAMAGED => spum.DAMAGED_List.Count,
+            PlayerState.DEBUFF => spum.DEBUFF_List.Count,
+            PlayerState.DEATH => spum.DEATH_List.Count,
+            PlayerState.OTHER => spum.OTHER_List.Count,
+            _ => 0
+        };
+    }
+
+    float GetClipDuration(PlayerState state, int index, float fallback)
+    {
+        if (spum == null)
+            return fallback;
+
+        var clips = state switch
+        {
+            PlayerState.DAMAGED => spum.DAMAGED_List,
+            PlayerState.DEATH => spum.DEATH_List,
+            PlayerState.ATTACK => spum.ATTACK_List,
+            PlayerState.OTHER => spum.OTHER_List,
+            _ => null
+        };
+
+        if (clips == null || clips.Count == 0)
+            return fallback;
+
+        index = Mathf.Clamp(index, 0, clips.Count - 1);
+        var clip = clips[index];
+        return clip != null ? clip.length : fallback;
     }
 
     float ReadHorizontalInput()
@@ -295,7 +464,7 @@ public class PlayerController : MonoBehaviour
         if (dashCooldownTimer > 0f)
             dashCooldownTimer -= Time.deltaTime;
 
-        if (isAttacking)
+        if (isAttacking || isHurt || isDead)
             return;
 
         moveInput = ReadHorizontalInput();
@@ -352,7 +521,7 @@ public class PlayerController : MonoBehaviour
         else if (coyoteTimer > 0f)
             coyoteTimer -= Time.fixedDeltaTime;
 
-        if (isAttacking)
+        if (isAttacking || isHurt || isDead)
         {
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
             UpdateRunLoopSound();
@@ -379,7 +548,9 @@ public class PlayerController : MonoBehaviour
         bool shouldRun = isGrounded
             && Mathf.Abs(moveInput) > 0.01f
             && !isDashing
-            && !isAttacking;
+            && !isAttacking
+            && !isHurt
+            && !isDead;
 
         float volume = GameSettings.GetEffectiveSfxVolume();
 
@@ -534,11 +705,15 @@ public class PlayerController : MonoBehaviour
             var monsterStats = hit.GetComponentInParent<MonsterStats>();
             if (monsterStats != null && !monsterStats.IsDead)
             {
-                int damage = Mathf.RoundToInt(attackDamage * (characterStats != null
-                    ? characterStats.PhysicalAttackMultiplier
-                    : 1f));
-                monsterStats.TakeDamage(damage);
-                DamagePopup.Show(hit.bounds.center, damage, Color.red);
+                bool isCritical = false;
+                int damage = characterStats != null
+                    ? characterStats.CalculatePhysicalDamage(attackDamage, out isCritical)
+                    : attackDamage;
+
+                if (monsterStats.TakeDamage(damage))
+                    PlaySfx(killSound);
+
+                DamagePopup.Show(hit.bounds.center, damage, isCritical ? Color.red : Color.white);
                 Debug.Log($"[Player] Удар по {monsterStats.name} на {damage} урона. HP={monsterStats.CurrentHealth}/{monsterStats.MaxHealth}");
             }
             else
@@ -578,7 +753,7 @@ public class PlayerController : MonoBehaviour
 
     void UpdateAnimation()
     {
-        if (spum == null || isAttacking || isDashing)
+        if (spum == null || isAttacking || isDashing || isHurt || isDead)
             return;
 
         if (Mathf.Abs(moveInput) > 0.01f)

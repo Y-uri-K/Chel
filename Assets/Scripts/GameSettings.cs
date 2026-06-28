@@ -78,10 +78,15 @@ public static class GameSettings
 
     public static void Apply()
     {
-        AudioListener.volume = MasterVolume;
+        AudioListener.volume = 1f;
         ApplyMusicSources();
         ApplyResolution();
         SettingsChanged?.Invoke();
+    }
+
+    public static float GetEffectiveMusicVolume()
+    {
+        return MasterVolume * MusicVolume;
     }
 
     public static float GetEffectiveSfxVolume()
@@ -116,9 +121,9 @@ public static class GameSettings
         return closestIndex;
     }
 
-    static void ApplyMusicSources()
+    internal static void ApplyMusicSources()
     {
-        float musicVolume = MasterVolume * MusicVolume;
+        float musicVolume = GetEffectiveMusicVolume();
         var musicSources = UnityEngine.Object.FindObjectsByType<MusicAudioSource>(FindObjectsSortMode.None);
 
         foreach (var musicSource in musicSources)

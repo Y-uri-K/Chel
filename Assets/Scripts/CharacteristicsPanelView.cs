@@ -22,7 +22,10 @@ public class CharacteristicsPanelView : MonoBehaviour
     void OnEnable()
     {
         if (stats != null)
+        {
             stats.OnHealthChanged += HandleStatsChanged;
+            stats.OnStatsChanged += HandleStatsChanged;
+        }
 
         PlayerProgress.DiamondsChanged += HandleDiamondsChanged;
         Refresh();
@@ -31,7 +34,10 @@ public class CharacteristicsPanelView : MonoBehaviour
     void OnDisable()
     {
         if (stats != null)
+        {
             stats.OnHealthChanged -= HandleStatsChanged;
+            stats.OnStatsChanged -= HandleStatsChanged;
+        }
 
         PlayerProgress.DiamondsChanged -= HandleDiamondsChanged;
     }
@@ -66,12 +72,15 @@ public class CharacteristicsPanelView : MonoBehaviour
             "Характеристики\n\n" +
             $"ОЗ: {characterStats.CurrentHealth}/{characterStats.MaxHealth}\n" +
             $"Физ. атака: {FormatPercent(characterStats.PhysicalAttackPercent)}\n" +
-            $"Маг. атака: {FormatPercent(characterStats.MagicalAttackPercent)}\n" +
-            $"Скорость атаки: {FormatPercent(characterStats.AttackSpeedPercent)}\n" +
             $"Скорость движения: {FormatPercent(characterStats.MoveSpeedPercent)}\n" +
             $"Шанс крита: {FormatPercent(characterStats.CritChancePercent)}\n" +
-            $"Крит. урон: {FormatPercent(characterStats.CritDamagePercent)}\n" +
+            $"Множитель дохода: X{FormatMultiplier(characterStats.IncomeMultiplier)}\n" +
             $"Алмазы: {PlayerProgress.Diamonds}";
+    }
+
+    static string FormatMultiplier(float value)
+    {
+        return value % 1f == 0f ? $"{value:0}" : $"{value:0.#}";
     }
 
     static string FormatPercent(float value)

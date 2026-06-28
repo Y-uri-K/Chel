@@ -4,16 +4,25 @@ using UnityEngine;
 public class CharacterStats : MonoBehaviour
 {
     [Header("ОЗ")]
-    [SerializeField] int maxHealth = 100;
+    [SerializeField] int baseMaxHealth = 100;
 
     [Header("Боевые характеристики (%)")]
-    [SerializeField] float physicalAttackPercent = 100f;
-    [SerializeField] float magicalAttackPercent = 100f;
-    [SerializeField] float attackSpeedPercent = 100f;
-    [SerializeField] float moveSpeedPercent = 100f;
-    [SerializeField] float critChancePercent = 5f;
-    [SerializeField] float critDamagePercent = 150f;
+    [SerializeField] float basePhysicalAttackPercent = 100f;
+    [SerializeField] float baseMagicalAttackPercent = 100f;
+    [SerializeField] float baseAttackSpeedPercent = 100f;
+    [SerializeField] float baseMoveSpeedPercent = 100f;
+    [SerializeField] float baseCritChancePercent = 5f;
+    [SerializeField] float baseCritDamagePercent = 150f;
+    [SerializeField] float baseIncomeMultiplier = 1f;
 
+    int maxHealth;
+    float physicalAttackPercent;
+    float magicalAttackPercent;
+    float attackSpeedPercent;
+    float moveSpeedPercent;
+    float critChancePercent;
+    float critDamagePercent;
+    float incomeMultiplier;
     int currentHealth;
 
     public int CurrentHealth => currentHealth;
@@ -26,6 +35,7 @@ public class CharacterStats : MonoBehaviour
     public float MoveSpeedPercent => moveSpeedPercent;
     public float CritChancePercent => critChancePercent;
     public float CritDamagePercent => critDamagePercent;
+    public float IncomeMultiplier => incomeMultiplier;
 
     public float MoveSpeedMultiplier => moveSpeedPercent / 100f;
     public float AttackSpeedMultiplier => attackSpeedPercent / 100f;
@@ -33,12 +43,49 @@ public class CharacterStats : MonoBehaviour
     public float MagicalAttackMultiplier => magicalAttackPercent / 100f;
     public float CritDamageMultiplier => critDamagePercent / 100f;
 
+    public int Diamonds => PlayerProgress.Diamonds;
+
     public event Action<CharacterStats> OnHealthChanged;
+    public event Action<CharacterStats> OnStatsChanged;
     public event Action<CharacterStats> OnDeath;
 
     void Awake()
     {
+        maxHealth = baseMaxHealth;
+        physicalAttackPercent = basePhysicalAttackPercent;
+        magicalAttackPercent = baseMagicalAttackPercent;
+        attackSpeedPercent = baseAttackSpeedPercent;
+        moveSpeedPercent = baseMoveSpeedPercent;
+        critChancePercent = baseCritChancePercent;
+        critDamagePercent = baseCritDamagePercent;
+        incomeMultiplier = baseIncomeMultiplier;
         currentHealth = maxHealth;
+    }
+
+    void Start()
+    {
+        RecalculateFromShop();
+    }
+
+    public void RecalculateFromShop()
+    {
+        int previousMaxHealth = maxHealth > 0 ? maxHealth : baseMaxHealth;
+        float healthRatio = previousMaxHealth > 0 ? (float)currentHealth / previousMaxHealth : 1f;
+
+        maxHealth = baseMaxHealth + Mathf.RoundToInt(ShopUpgradeItem.GetTotalBonus(ShopUpgradeType.Health, PlayerProgress.GetShopUpgradeLevel(ShopUpgradeType.Health)));
+        physicalAttackPercent = basePhysicalAttackPercent + ShopUpgradeItem.GetTotalBonus(ShopUpgradeType.Damage, PlayerProgress.GetShopUpgradeLevel(ShopUpgradeType.Damage));
+        critChancePercent = baseCritChancePercent + ShopUpgradeItem.GetTotalBonus(ShopUpgradeType.CritChance, PlayerProgress.GetShopUpgradeLevel(ShopUpgradeType.CritChance));
+        moveSpeedPercent = baseMoveSpeedPercent + ShopUpgradeItem.GetTotalBonus(ShopUpgradeType.Speed, PlayerProgress.GetShopUpgradeLevel(ShopUpgradeType.Speed));
+        incomeMultiplier = baseIncomeMultiplier + ShopUpgradeItem.GetTotalBonus(ShopUpgradeType.MultMoney, PlayerProgress.GetShopUpgradeLevel(ShopUpgradeType.MultMoney));
+
+        magicalAttackPercent = baseMagicalAttackPercent;
+        attackSpeedPercent = baseAttackSpeedPercent;
+        critDamagePercent = baseCritDamagePercent;
+
+        currentHealth = Mathf.Clamp(Mathf.RoundToInt(maxHealth * healthRatio), 1, maxHealth);
+
+        OnStatsChanged?.Invoke(this);
+        OnHealthChanged?.Invoke(this);
     }
 
     public void TakeDamage(int amount)
@@ -77,9 +124,33 @@ public class CharacterStats : MonoBehaviour
         return UnityEngine.Random.value < critChancePercent / 100f;
     }
 
+    public int CalculatePhysicalDamage(int baseDamage, out bool isCritical)
+    {
+        float damage = baseDamage * PhysicalAttackMultiplier;
+        isCritical = RollCrit();
+        if (isCritical)
+            damage *= CritDamageMultiplier;
+
+        return Mathf.Max(1, Mathf.RoundToInt(damage));
+    }
+
     public void ResetToFullHealth()
     {
+        RecalculateFromShop();
         currentHealth = maxHealth;
         OnHealthChanged?.Invoke(this);
     }
+
+    public void ResetMoney()
+    {
+        PlayerProgress.ResetDiamonds();
+    }
+
+#if UNITY_EDITOR
+    [ContextMenu("Reset Money To 0")]
+    void ResetMoneyContextMenu()
+    {
+        ResetMoney();
+    }
+#endif
 }

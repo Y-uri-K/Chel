@@ -1283,6 +1283,7 @@ MonoBehaviour:
     m_Bits: 4294967295
   hitSound1: {fileID: 8300000, guid: fa23883bdf1464043b664e6de9bf9887, type: 3}
   hitSound2: {fileID: 8300000, guid: 2da2f3dbbded75249a455a2e0d5e1d9f, type: 3}
+  killSound: {fileID: 8300000, guid: fc05c461cc1d9eb4f8d5b9737e5c9d86, type: 3}
   dashSound: {fileID: 8300000, guid: 2b13b4611f827fe459dc79330d645c87, type: 3}
   jumpSound: {fileID: 8300000, guid: 9dbe1e6b4b2825a49857c55feb749860, type: 3}
   landingSound: {fileID: 8300000, guid: f27409097851c774087489403761edef, type: 3}

@@ -236,7 +236,11 @@ public class MonsterAI : MonoBehaviour
 
     void DoAttackHit()
     {
-        if (isDead || !playerStats) return;
+        if (isDead) return;
+
+        stats.PlayAttackSound();
+
+        if (!playerStats) return;
         if (Dist() <= stats.AttackRange * 1.4f)
         {
             playerStats.TakeDamage(stats.Damage);

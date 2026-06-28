@@ -37,6 +37,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] LayerMask monsterMask = ~0;
     [SerializeField] AudioClip hitSound1;
     [SerializeField] AudioClip hitSound2;
+    [SerializeField] AudioClip killSound;
 
     [Header("Movement SFX")]
     [SerializeField] AudioClip dashSound;
@@ -142,6 +143,8 @@ public class PlayerController : MonoBehaviour
             characterStats.OnHealthChanged += HandleHealthChanged;
             characterStats.OnDeath += HandleDeath;
         }
+
+        GameSettings.SettingsChanged += HandleSettingsChanged;
     }
 
     void OnDisable()
@@ -156,6 +159,14 @@ public class PlayerController : MonoBehaviour
             characterStats.OnHealthChanged -= HandleHealthChanged;
             characterStats.OnDeath -= HandleDeath;
         }
+
+        GameSettings.SettingsChanged -= HandleSettingsChanged;
+    }
+
+    void HandleSettingsChanged()
+    {
+        if (runLoopSource != null && runLoopSource.isPlaying)
+            runLoopSource.volume = GameSettings.GetEffectiveSfxVolume();
     }
 
     void SetupSfxSource()
@@ -182,10 +193,10 @@ public class PlayerController : MonoBehaviour
 
     void PlaySfx(AudioClip clip)
     {
-        if (sfxSource == null || clip == null)
+        if (clip == null)
             return;
 
-        sfxSource.PlayOneShot(clip, GameSettings.GetEffectiveSfxVolume());
+        SfxPlayer.Play(clip);
     }
 
     void ApplyBodyCollider()
@@ -694,11 +705,15 @@ public class PlayerController : MonoBehaviour
             var monsterStats = hit.GetComponentInParent<MonsterStats>();
             if (monsterStats != null && !monsterStats.IsDead)
             {
-                int damage = Mathf.RoundToInt(attackDamage * (characterStats != null
-                    ? characterStats.PhysicalAttackMultiplier
-                    : 1f));
-                monsterStats.TakeDamage(damage);
-                DamagePopup.Show(hit.bounds.center, damage, Color.red);
+                bool isCritical = false;
+                int damage = characterStats != null
+                    ? characterStats.CalculatePhysicalDamage(attackDamage, out isCritical)
+                    : attackDamage;
+
+                if (monsterStats.TakeDamage(damage))
+                    PlaySfx(killSound);
+
+                DamagePopup.Show(hit.bounds.center, damage, isCritical ? Color.red : Color.white);
                 Debug.Log($"[Player] Удар по {monsterStats.name} на {damage} урона. HP={monsterStats.CurrentHealth}/{monsterStats.MaxHealth}");
             }
             else

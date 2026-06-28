@@ -363,13 +363,18 @@ public class MonsterPrefabGenerator : EditorWindow
         return path;
     }
 
+    static AudioClip LoadAttackSound(string fileName)
+    {
+        return AssetDatabase.LoadAssetAtPath<AudioClip>($"Assets/music/{fileName}.mp3");
+    }
+
     static void ApplyBaseStats(MonsterStats stats, string name)
     {
         switch (name)
         {
             case "FlyingEye":  stats.SetBaseStats(60, 10, 240f, 140f, 1.0f, 500f, 250f); stats.SetDiamondReward(5); break;
-            case "Goblin":     stats.SetBaseStats(90, 12, 200f, 120f, 1.3f, 420f, 200f); stats.SetDiamondReward(8); break;
-            case "Mushroom":   stats.SetBaseStats(130, 18, 140f, 110f, 1.6f, 350f, 170f); stats.SetDiamondReward(10); break;
+            case "Goblin":     stats.SetBaseStats(90, 12, 200f, 120f, 1.3f, 420f, 200f); stats.SetDiamondReward(8); stats.SetAttackSound(LoadAttackSound("goblin hit")); break;
+            case "Mushroom":   stats.SetBaseStats(130, 18, 140f, 110f, 1.6f, 350f, 170f); stats.SetDiamondReward(10); stats.SetAttackSound(LoadAttackSound("slap")); break;
             case "Skeleton":   stats.SetBaseStats(80, 14, 160f, 130f, 1.1f, 450f, 220f); stats.SetDiamondReward(7); break;
             case "StoneGolem": stats.SetBaseStats(250, 30, 220f, 300f, 2.0f, 2400f, 1200f); stats.SetDiamondReward(25); break;
             case "DemonSlime": stats.SetBaseStats(200, 22, 180f, 250f, 1.5f, 600f, 300f); stats.SetDiamondReward(20); break;

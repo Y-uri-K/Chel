@@ -122,6 +122,16 @@ public class CharacterStats : MonoBehaviour
         return UnityEngine.Random.value < critChancePercent / 100f;
     }
 
+    public int CalculatePhysicalDamage(int baseDamage, out bool isCritical)
+    {
+        float damage = baseDamage * PhysicalAttackMultiplier;
+        isCritical = RollCrit();
+        if (isCritical)
+            damage *= CritDamageMultiplier;
+
+        return Mathf.Max(1, Mathf.RoundToInt(damage));
+    }
+
     public void ResetToFullHealth()
     {
         RecalculateFromShop();

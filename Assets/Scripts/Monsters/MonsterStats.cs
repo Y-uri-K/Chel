@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Характеристики монстра с масштабированием от уровня.
@@ -26,6 +27,10 @@ public class MonsterStats : MonoBehaviour
 
     [Header("Награда (алмазы)")]
     [SerializeField] int diamondReward = 5;
+
+    [Header("Звуки")]
+    [FormerlySerializedAs("hitSound")]
+    [SerializeField] AudioClip attackSound;
 
     [Header("Immune-механика")]
     public int hitsToActivateImmune = 999;
@@ -61,7 +66,10 @@ public class MonsterStats : MonoBehaviour
 
     float LevelMultiplier(float perLevel) => 1f + perLevel * (level - 1);
 
-    void Awake() { currentHealth = MaxHealth; }
+    void Awake()
+    {
+        currentHealth = MaxHealth;
+    }
 
     public void SetLevel(int newLevel, bool fillHealth = true)
     {
@@ -94,6 +102,14 @@ public class MonsterStats : MonoBehaviour
             PlayerProgress.AddDiamonds(diamondReward);
     }
 
+    public void PlayAttackSound()
+    {
+        if (attackSound == null)
+            return;
+
+        SfxPlayer.Play(attackSound);
+    }
+
     public void ResetToFullHealth()
     {
         isDead = false;
@@ -115,6 +131,11 @@ public class MonsterStats : MonoBehaviour
     public void SetDiamondReward(int reward)
     {
         diamondReward = Mathf.Max(0, reward);
+    }
+
+    public void SetAttackSound(AudioClip clip)
+    {
+        attackSound = clip;
     }
 #if UNITY_EDITOR
     void OnValidate() { if (!Application.isPlaying) level = Mathf.Max(1, level); }

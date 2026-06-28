@@ -6,10 +6,28 @@ public class MusicAudioSource : MonoBehaviour
     AudioSource audioSource;
     [SerializeField] float baseVolume = 1f;
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    static void EnsureWorldMusicSources()
+    {
+        var audioSources = Object.FindObjectsByType<AudioSource>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (var source in audioSources)
+        {
+            if (source == null || source.gameObject.name != "World")
+                continue;
+
+            if (source.GetComponent<MusicAudioSource>() != null)
+                continue;
+
+            source.gameObject.AddComponent<MusicAudioSource>();
+        }
+
+        GameSettings.ApplyMusicSources();
+    }
+
     void Awake()
     {
         audioSource = GetComponent<AudioSource>();
-        ApplyVolume(GameSettings.MasterVolume * GameSettings.MusicVolume);
+        ApplyVolume(GameSettings.GetEffectiveMusicVolume());
         GameSettings.SettingsChanged += HandleSettingsChanged;
     }
 
@@ -20,7 +38,7 @@ public class MusicAudioSource : MonoBehaviour
 
     void HandleSettingsChanged()
     {
-        ApplyVolume(GameSettings.MasterVolume * GameSettings.MusicVolume);
+        ApplyVolume(GameSettings.GetEffectiveMusicVolume());
     }
 
     public void ApplyVolume(float volume)

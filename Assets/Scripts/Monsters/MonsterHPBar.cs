@@ -17,6 +17,8 @@ public class MonsterHPBar : MonoBehaviour
     SpriteRenderer fillRenderer;
     TextMeshPro hpText;
     SpriteRenderer bgSr;
+    SpriteRenderer fillSr;
+    bool barCreated;
 
     void Start()
     {
@@ -55,6 +57,7 @@ public class MonsterHPBar : MonoBehaviour
         bgSr.color = new Color(0.15f, 0.03f, 0.03f, 0.85f);
         ApplySorting(bgSr, sortingLayerId, bgOrder);
 
+        // Fill — anchored left
         var fill = new GameObject("HP_Fill");
         fill.transform.SetParent(barRoot.transform, false);
         fill.transform.localPosition = new Vector3(-worldBarWidth * 0.5f, 0f, -0.01f);

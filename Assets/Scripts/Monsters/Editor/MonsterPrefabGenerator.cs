@@ -150,7 +150,7 @@ public class MonsterPrefabGenerator : EditorWindow
         so.FindProperty("baseMaxHealth").intValue = 250;
         so.FindProperty("baseDamage").intValue = 30;
         so.FindProperty("baseMoveSpeed").floatValue = 220f;
-        so.FindProperty("baseAttackRange").floatValue = 145f;
+        so.FindProperty("baseAttackRange").floatValue = 300f;
         so.FindProperty("baseAttackCooldown").floatValue = 2f;
         so.FindProperty("baseChaseRange").floatValue = 50000f;
         so.FindProperty("basePatrolRange").floatValue = 1200f;

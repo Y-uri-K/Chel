@@ -15,7 +15,7 @@ public class StoneGolemInitializer : MonoBehaviour
             maxHealth: 250,
             damage: 30,
             moveSpeed: 220f,
-            attackRange: 145f,
+            attackRange: 300f,
             attackCooldown: 2f,
             chaseRange: 50000f,
             patrolRange: 1200f

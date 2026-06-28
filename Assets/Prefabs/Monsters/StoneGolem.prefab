@@ -349,7 +349,7 @@ MonoBehaviour:
   baseMaxHealth: 250
   baseDamage: 30
   baseMoveSpeed: 220
-  baseAttackRange: 145
+  baseAttackRange: 300
   baseAttackCooldown: 2
   baseChaseRange: 50000
   basePatrolRange: 1200
@@ -374,9 +374,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 0}
-  worldBarWidth: 250
-  worldBarHeight: 18
-  worldOffsetY: 200
+  barWidth: 1
+  barHeight: 0.075
+  yOffset: 0.45
 --- !u!114 &9079805121132788133
 MonoBehaviour:
   m_ObjectHideFlags: 0

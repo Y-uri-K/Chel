@@ -5,6 +5,7 @@ public static class SceneNav
 {
     public const string HubSceneName = "Hub";
     public const string Level1SceneName = "level1";
+    public const string Level3BossSceneName = "level 3 boss";
 
     public static void LoadHub()
     {

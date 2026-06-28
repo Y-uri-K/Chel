@@ -35,11 +35,23 @@ public class PlayerController : MonoBehaviour
     [SerializeField] int attackDamage = 15;
     [SerializeField] float attackHitTime = 0.15f;
     [SerializeField] LayerMask monsterMask = ~0;
+    [SerializeField] AudioClip hitSound1;
+    [SerializeField] AudioClip hitSound2;
+
+    [Header("Movement SFX")]
+    [SerializeField] AudioClip dashSound;
+    [SerializeField] AudioClip jumpSound;
+    [SerializeField] AudioClip landingSound;
+    [SerializeField] AudioClip runSound;
 
     [Header("Ground Check")]
     [SerializeField] float groundCheckDistance = 0.35f;
     [SerializeField] LayerMask groundMask = ~0;
     [SerializeField] float coyoteTime = 0.05f;
+
+    [Header("Collider")]
+    [SerializeField] Vector2 bodyColliderOffset = new Vector2(0f, 35f);
+    [SerializeField] Vector2 bodyColliderSize = new Vector2(40f, 70f);
 
     [Header("Input")]
     [SerializeField] InputActionAsset inputActions;
@@ -48,6 +60,8 @@ public class PlayerController : MonoBehaviour
     CharacterStats characterStats;
     SPUM_Prefabs spum;
     Collider2D bodyCollider;
+    AudioSource sfxSource;
+    AudioSource runLoopSource;
 
     InputAction moveAction;
     InputAction jumpAction;
@@ -65,10 +79,13 @@ public class PlayerController : MonoBehaviour
     float dashCooldownTimer;
     Vector2 dashDirection;
     int attackIndex;
+    bool wasGrounded;
     PlayerState currentAnimState = PlayerState.IDLE;
 
     public bool IsGrounded => isGrounded;
     public float VerticalVelocity => rb != null ? rb.linearVelocity.y : 0f;
+
+    public InputActionAsset GetInputActions() => inputActions;
 
     void Awake()
     {
@@ -91,9 +108,56 @@ public class PlayerController : MonoBehaviour
         }
 
         RemoveChildPhysics();
+        ApplyBodyCollider();
         ResetVisualTransform();
         BindInputActions();
+        SetupSfxSource();
         airJumpsRemaining = maxAirJumps;
+    }
+
+    void Start()
+    {
+        wasGrounded = CheckGrounded();
+        isGrounded = wasGrounded;
+    }
+
+    void SetupSfxSource()
+    {
+        var sources = GetComponents<AudioSource>();
+        if (sources.Length > 0)
+            sfxSource = sources[0];
+        else
+            sfxSource = gameObject.AddComponent<AudioSource>();
+
+        sfxSource.playOnAwake = false;
+        sfxSource.spatialBlend = 0f;
+        sfxSource.loop = false;
+
+        if (sources.Length > 1)
+            runLoopSource = sources[1];
+        else
+            runLoopSource = gameObject.AddComponent<AudioSource>();
+
+        runLoopSource.playOnAwake = false;
+        runLoopSource.spatialBlend = 0f;
+        runLoopSource.loop = true;
+    }
+
+    void PlaySfx(AudioClip clip)
+    {
+        if (sfxSource == null || clip == null)
+            return;
+
+        sfxSource.PlayOneShot(clip, GameSettings.GetEffectiveSfxVolume());
+    }
+
+    void ApplyBodyCollider()
+    {
+        if (bodyCollider is not BoxCollider2D box)
+            return;
+
+        box.offset = bodyColliderOffset;
+        box.size = bodyColliderSize;
     }
 
     void RemoveChildPhysics()
@@ -213,6 +277,7 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, JumpVelocity(height));
         isGrounded = false;
         rb.WakeUp();
+        PlaySfx(jumpSound);
     }
 
     void Update()
@@ -271,7 +336,13 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        isGrounded = CheckGrounded();
+        bool groundedNow = CheckGrounded();
+
+        if (groundedNow && !wasGrounded && rb.linearVelocity.y <= 1f)
+            PlaySfx(landingSound);
+
+        wasGrounded = groundedNow;
+        isGrounded = groundedNow;
 
         if (isGrounded)
         {
@@ -284,17 +355,45 @@ public class PlayerController : MonoBehaviour
         if (isAttacking)
         {
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+            UpdateRunLoopSound();
             return;
         }
 
         if (isDashing)
         {
             rb.linearVelocity = dashDirection * dashSpeed;
+            UpdateRunLoopSound();
             return;
         }
 
         ApplyHorizontalMovement();
         ApplyGravityModifiers();
+        UpdateRunLoopSound();
+    }
+
+    void UpdateRunLoopSound()
+    {
+        if (runLoopSource == null || runSound == null)
+            return;
+
+        bool shouldRun = isGrounded
+            && Mathf.Abs(moveInput) > 0.01f
+            && !isDashing
+            && !isAttacking;
+
+        float volume = GameSettings.GetEffectiveSfxVolume();
+
+        if (shouldRun)
+        {
+            runLoopSource.volume = volume;
+            if (!runLoopSource.isPlaying)
+            {
+                runLoopSource.clip = runSound;
+                runLoopSource.Play();
+            }
+        }
+        else if (runLoopSource.isPlaying)
+            runLoopSource.Stop();
     }
 
     void ApplyHorizontalMovement()
@@ -372,6 +471,8 @@ public class PlayerController : MonoBehaviour
 
         if (spum != null && spum.OTHER_List.Count > 0)
             spum.PlayAnimation(PlayerState.OTHER, 0);
+
+        PlaySfx(dashSound);
     }
 
     void EndDash()
@@ -390,10 +491,11 @@ public class PlayerController : MonoBehaviour
         isAttacking = true;
         rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
 
+        int currentAttack = 0;
         if (spum != null && spum.ATTACK_List.Count > 0)
         {
-            attackIndex = attackIndex % spum.ATTACK_List.Count;
-            spum.PlayAnimation(PlayerState.ATTACK, attackIndex);
+            currentAttack = attackIndex % spum.ATTACK_List.Count;
+            spum.PlayAnimation(PlayerState.ATTACK, currentAttack);
             attackIndex++;
         }
 
@@ -406,6 +508,9 @@ public class PlayerController : MonoBehaviour
         if (remaining > 0f)
             yield return new WaitForSeconds(remaining);
 
+        PlayHitSound(currentAttack);
+
+        yield return new WaitForSeconds(attackDuration);
         isAttacking = false;
         currentAnimState = PlayerState.IDLE;
     }
@@ -460,6 +565,13 @@ public class PlayerController : MonoBehaviour
         Gizmos.color = Color.red;
         var attackOrigin = (Vector2)transform.position + Vector2.right * facing * (attackRange * 0.5f);
         Gizmos.DrawWireCube(attackOrigin, attackBoxSize);
+    void PlayHitSound(int attackAnimIndex)
+    {
+        AudioClip clip = attackAnimIndex % 2 == 0 ? hitSound1 : hitSound2;
+        if (clip == null)
+            clip = attackAnimIndex % 2 == 0 ? hitSound2 : hitSound1;
+
+        PlaySfx(clip);
     }
 
     void UpdateAnimation()

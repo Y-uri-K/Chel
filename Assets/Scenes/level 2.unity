@@ -3367,13 +3367,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2d3e4f5a6b7488990abcdef12345680, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  physicalAttackPercent: 100
-  magicalAttackPercent: 100
-  attackSpeedPercent: 100
-  moveSpeedPercent: 100
-  critChancePercent: 5
-  critDamagePercent: 150
+  baseMaxHealth: 100
+  basePhysicalAttackPercent: 100
+  baseMagicalAttackPercent: 100
+  baseAttackSpeedPercent: 100
+  baseMoveSpeedPercent: 100
+  baseCritChancePercent: 5
+  baseCritDamagePercent: 150
+  baseIncomeMultiplier: 1
 --- !u!114 &1574470504
 MonoBehaviour:
   m_ObjectHideFlags: 0

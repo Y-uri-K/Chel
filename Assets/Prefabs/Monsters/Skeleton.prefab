@@ -144,6 +144,7 @@ MonoBehaviour:
   speedPerLevel: 0.05
   rangePerLevel: 0.03
   level: 1
+  diamondReward: 7
   hitsToActivateImmune: 999
   hitsToDeactivateImmune: 999
 --- !u!114 &416202639947928400

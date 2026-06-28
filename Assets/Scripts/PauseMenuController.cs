@@ -25,6 +25,8 @@ public class PauseMenuController : MonoBehaviour
     bool isPaused;
     bool spawnCaptured;
 
+    public bool IsPaused => isPaused;
+
     void Awake()
     {
         AutoFindReferences();
@@ -57,8 +59,21 @@ public class PauseMenuController : MonoBehaviour
         return CharacteristicsPanelController.Instance != null && CharacteristicsPanelController.Instance.IsOpen;
     }
 
+    bool IsShopBlockingInput()
+    {
+        var trader = FindFirstObjectByType<TraderController>();
+        return trader != null && trader.IsShopOpen;
+    }
+
     void HandleEscapePressed()
     {
+        var trader = FindFirstObjectByType<TraderController>();
+        if (trader != null && trader.IsShopOpen)
+        {
+            trader.CloseShop();
+            return;
+        }
+
         if (IsCharacteristicsBlockingInput())
         {
             CharacteristicsPanelController.Instance.ForceClosePanel();
@@ -203,7 +218,7 @@ public class PauseMenuController : MonoBehaviour
 
     void TogglePauseMenu()
     {
-        if (IsDeathBlockingInput() || IsCharacteristicsBlockingInput())
+        if (IsDeathBlockingInput() || IsCharacteristicsBlockingInput() || IsShopBlockingInput())
             return;
 
         if (isPaused)

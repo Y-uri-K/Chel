@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class MonsterHPBar : MonoBehaviour
@@ -6,80 +7,151 @@ public class MonsterHPBar : MonoBehaviour
     [SerializeField] float worldBarWidth = 250f;
     [SerializeField] float worldBarHeight = 18f;
     [SerializeField] float worldOffsetY = 200f;
+    [SerializeField] float textWorldHeight = 14f;
 
+    [Header("Order In Layer")]
+    [SerializeField] bool useCustomOrderInLayer = true;
+    [SerializeField] int orderInLayer = 25;
+
+    GameObject barRoot;
     SpriteRenderer fillRenderer;
-    TextMesh hpText;
+    TextMeshPro hpText;
     SpriteRenderer bgSr;
 
-    void Awake()
+    void Start()
     {
-        if (stats == null) stats = GetComponent<MonsterStats>();
-        if (stats == null) return;
+        if (stats == null)
+            stats = GetComponent<MonsterStats>();
+
+        if (stats == null)
+            return;
+
         CreateBar();
+        Refresh(stats);
     }
 
     void CreateBar()
     {
-        float ps = transform.lossyScale.x;
+        float ps = Mathf.Max(0.0001f, transform.lossyScale.x);
         float inv = 1f / ps;
-        var tex = CreateTex();
+        var texCenter = CreateTex(new Vector2(0.5f, 0.5f));
+        var texLeft = CreateTex(new Vector2(0f, 0.5f));
 
-        var root = new GameObject("HP_Root");
-        root.transform.SetParent(transform, false);
-        root.transform.localPosition = new Vector3(0f, worldOffsetY * inv, 0f);
-        root.transform.localScale = new Vector3(inv, inv, 1f);
+        var monsterRenderer = GetComponent<SpriteRenderer>();
+        int sortingLayerId = monsterRenderer != null ? monsterRenderer.sortingLayerID : 0;
+        int bgOrder = ResolveBgSortingOrder(monsterRenderer);
+
+        barRoot = new GameObject("HP_Root");
+        barRoot.transform.SetParent(transform, false);
+        barRoot.transform.localPosition = new Vector3(0f, worldOffsetY * inv, 0f);
+        barRoot.transform.localScale = new Vector3(inv, inv, 1f);
 
         var bg = new GameObject("HP_BG");
-        bg.transform.SetParent(root.transform, false);
-        bg.transform.localPosition = new Vector3(-worldBarWidth * 0.5f, 0f, 0f);
+        bg.transform.SetParent(barRoot.transform, false);
+        bg.transform.localPosition = Vector3.zero;
         bg.transform.localScale = new Vector3(worldBarWidth, worldBarHeight, 1f);
         bgSr = bg.AddComponent<SpriteRenderer>();
-        bgSr.sprite = tex;
-        bgSr.color = new Color(0.15f, 0.03f, 0.03f, 0.8f);
-        bgSr.sortingOrder = 25;
+        bgSr.sprite = texCenter;
+        bgSr.color = new Color(0.15f, 0.03f, 0.03f, 0.85f);
+        ApplySorting(bgSr, sortingLayerId, bgOrder);
 
         var fill = new GameObject("HP_Fill");
-        fill.transform.SetParent(bg.transform, false);
-        fill.transform.localPosition = new Vector3(0.5f, 0f, -0.01f);
-        fill.transform.localScale = Vector3.one;
+        fill.transform.SetParent(barRoot.transform, false);
+        fill.transform.localPosition = new Vector3(-worldBarWidth * 0.5f, 0f, -0.01f);
+        fill.transform.localScale = new Vector3(worldBarWidth, worldBarHeight, 1f);
         fillRenderer = fill.AddComponent<SpriteRenderer>();
-        fillRenderer.sprite = tex;
-        fillRenderer.color = new Color(1f, 0.08f, 0.08f, 1f);
-        fillRenderer.sortingOrder = 26;
+        fillRenderer.sprite = texLeft;
+        fillRenderer.color = new Color(0.95f, 0.15f, 0.15f, 1f);
+        ApplySorting(fillRenderer, sortingLayerId, bgOrder + 1);
 
         var textGo = new GameObject("HP_Text");
-        textGo.transform.SetParent(root.transform, false);
-        textGo.transform.localPosition = new Vector3(0f, worldBarHeight * 0.5f + 40f, -0.02f);
-        textGo.transform.localScale = Vector3.one * 160f;
-        hpText = textGo.AddComponent<TextMesh>();
-        hpText.fontSize = 42;
-        hpText.anchor = TextAnchor.MiddleCenter;
-        hpText.color = Color.white;
-        hpText.fontStyle = FontStyle.Bold;
-        hpText.characterSize = 0.04f;
-        textGo.GetComponent<MeshRenderer>().sortingOrder = 27;
+        textGo.transform.SetParent(barRoot.transform, false);
+        textGo.transform.localPosition = new Vector3(0f, 0f, -0.02f);
+        textGo.transform.localScale = Vector3.one;
+        hpText = textGo.AddComponent<TextMeshPro>();
+        hpText.alignment = TextAlignmentOptions.Center;
+        hpText.verticalAlignment = VerticalAlignmentOptions.Middle;
+        hpText.fontSize = textWorldHeight;
+        hpText.enableAutoSizing = false;
+        hpText.overflowMode = TextOverflowModes.Overflow;
+        hpText.color = new Color(1f, 0.98f, 0.92f, 1f);
+        hpText.fontStyle = FontStyles.Bold;
+        hpText.rectTransform.sizeDelta = new Vector2(worldBarWidth, worldBarHeight);
+        ApplySorting(hpText.renderer, sortingLayerId, bgOrder + 2);
 
         stats.OnHealthChanged += Refresh;
-        stats.OnDeath += _ => { bgSr.enabled = false; fillRenderer.enabled = false; hpText.text = ""; };
-        Refresh(stats);
+        stats.OnDeath += HandleDeath;
+    }
+
+    int ResolveBgSortingOrder(SpriteRenderer monsterRenderer)
+    {
+        if (useCustomOrderInLayer)
+            return orderInLayer;
+
+        return (monsterRenderer != null ? monsterRenderer.sortingOrder : 10) + 1;
+    }
+
+    void HandleDeath(MonsterStats _)
+    {
+        if (barRoot != null)
+            barRoot.SetActive(false);
     }
 
     void Refresh(MonsterStats s)
     {
-        if (!fillRenderer) return;
-        float r = Mathf.Clamp01(s.HealthRatio);
-        fillRenderer.transform.localScale = new Vector3(r, 1f, 1f);
-        fillRenderer.enabled = r > 0f;
-        if (hpText) hpText.text = $"{s.CurrentHealth}/{s.MaxHealth}";
+        if (fillRenderer == null || s == null)
+            return;
+
+        float ratio = s.MaxHealth > 0
+            ? Mathf.Clamp01((float)s.CurrentHealth / s.MaxHealth)
+            : 0f;
+
+        fillRenderer.transform.localScale = new Vector3(worldBarWidth * ratio, worldBarHeight, 1f);
+        fillRenderer.enabled = ratio > 0f;
+
+        if (hpText != null)
+            hpText.text = $"{s.CurrentHealth}/{s.MaxHealth}";
     }
 
-    void OnDestroy() { if (stats) stats.OnHealthChanged -= Refresh; }
-
-    static Sprite CreateTex()
+    void OnDestroy()
     {
-        var t = new Texture2D(1, 1);
-        t.SetPixel(0, 0, Color.white);
-        t.Apply();
-        return Sprite.Create(t, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f), 1f);
+        if (stats != null)
+        {
+            stats.OnHealthChanged -= Refresh;
+            stats.OnDeath -= HandleDeath;
+        }
     }
+
+    static void ApplySorting(SpriteRenderer renderer, int sortingLayerId, int sortingOrder)
+    {
+        if (renderer == null)
+            return;
+
+        renderer.sortingLayerID = sortingLayerId;
+        renderer.sortingOrder = sortingOrder;
+    }
+
+    static void ApplySorting(Renderer renderer, int sortingLayerId, int sortingOrder)
+    {
+        if (renderer == null)
+            return;
+
+        renderer.sortingLayerID = sortingLayerId;
+        renderer.sortingOrder = sortingOrder;
+    }
+
+    static Sprite CreateTex(Vector2 pivot)
+    {
+        var texture = new Texture2D(1, 1);
+        texture.SetPixel(0, 0, Color.white);
+        texture.Apply();
+        return Sprite.Create(texture, new Rect(0, 0, 1, 1), pivot, 1f);
+    }
+
+#if UNITY_EDITOR
+    void OnValidate()
+    {
+        orderInLayer = Mathf.Clamp(orderInLayer, -32768, 32767);
+    }
+#endif
 }

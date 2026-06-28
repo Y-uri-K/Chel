@@ -24,6 +24,9 @@ public class MonsterStats : MonoBehaviour
     [Header("Уровень")]
     [SerializeField] int level = 1;
 
+    [Header("Награда (алмазы)")]
+    [SerializeField] int diamondReward = 5;
+
     [Header("Immune-механика")]
     public int hitsToActivateImmune = 999;
     public int hitsToDeactivateImmune = 999;
@@ -42,6 +45,7 @@ public class MonsterStats : MonoBehaviour
     public float ChaseRange      => baseChaseRange * LevelMultiplier(rangePerLevel);
     public float PatrolRange     => basePatrolRange;
     public int Level             => level;
+    public int DiamondReward     => diamondReward;
 
     public int CurrentHealth     => currentHealth;
     public bool IsDead           => isDead;
@@ -77,10 +81,17 @@ public class MonsterStats : MonoBehaviour
         if (currentHealth <= 0)
         {
             isDead = true;
+            GrantReward();
             OnDeath?.Invoke(this);
             return true;
         }
         return false;
+    }
+
+    void GrantReward()
+    {
+        if (diamondReward > 0)
+            PlayerProgress.AddDiamonds(diamondReward);
     }
 
     public void ResetToFullHealth()
@@ -99,6 +110,11 @@ public class MonsterStats : MonoBehaviour
         baseMaxHealth = maxHealth; baseDamage = damage; baseMoveSpeed = moveSpeed;
         baseAttackRange = attackRange; baseAttackCooldown = attackCooldown;
         baseChaseRange = chaseRange; basePatrolRange = patrolRange;
+    }
+
+    public void SetDiamondReward(int reward)
+    {
+        diamondReward = Mathf.Max(0, reward);
     }
 #if UNITY_EDITOR
     void OnValidate() { if (!Application.isPlaying) level = Mathf.Max(1, level); }

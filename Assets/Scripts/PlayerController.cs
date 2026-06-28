@@ -565,6 +565,8 @@ public class PlayerController : MonoBehaviour
         Gizmos.color = Color.red;
         var attackOrigin = (Vector2)transform.position + Vector2.right * facing * (attackRange * 0.5f);
         Gizmos.DrawWireCube(attackOrigin, attackBoxSize);
+    }
+
     void PlayHitSound(int attackAnimIndex)
     {
         AudioClip clip = attackAnimIndex % 2 == 0 ? hitSound1 : hitSound2;

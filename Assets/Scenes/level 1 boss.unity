@@ -1140,6 +1140,71 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &328929368
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 328929370}
+  - component: {fileID: 328929369}
+  m_Layer: 3
+  m_Name: MonsterSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &328929369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 328929368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bff52d9576bc63249a54672c32ab4598, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnPoints:
+  - position: {x: 1695.2, y: -523}
+    monsterType: 6
+    level: 20
+    respawnDelay: 3
+    maxInstances: 1
+    activationRadius: 281
+    aliveMonsters: []
+    respawnTimer: 0
+    initialSpawnDone: 0
+  flyingEyePrefab: {fileID: 7814649659285060495, guid: bd32dbbb7e46c784fa0757d666644bbb, type: 3}
+  goblinPrefab: {fileID: 6012852095379599591, guid: 002f563c7812fc14b875c369ddc24b0f, type: 3}
+  mushroomPrefab: {fileID: 4670192789277281256, guid: 5c4a2b9d19f5b6b4a9344c3b628ab2a5, type: 3}
+  skeletonPrefab: {fileID: 4003555712542053552, guid: 3d3ba4f899f5a2e4fb11a0ce36a291fd, type: 3}
+  stoneGolemPrefab: {fileID: 2131974808517924332, guid: f01782c8e02b1e64ca69e423ea283425, type: 3}
+  demonSlimePrefab: {fileID: 9026147283058069541, guid: 88444ff88bb34ba4682639313b1312b3, type: 3}
+  minotaurPrefab: {fileID: 3767344530102997562, guid: eb1477c24ffbe214f8989b58c1013ece, type: 3}
+  flyingDemonPrefab: {fileID: 5496556036825252160, guid: f770bcb07df5ba84386fbd6725ece53b, type: 3}
+  monstersContainer: {fileID: 1351796718}
+  verboseLogging: 1
+--- !u!4 &328929370
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 328929368}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1037.6235, y: 63.10154, z: 5.275045}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1351796718}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &335024490
 GameObject:
   m_ObjectHideFlags: 0
@@ -1535,6 +1600,13 @@ MonoBehaviour:
   dashZeroGravity: 1
   dashHardStop: 1
   attackDuration: 0.35
+  attackRange: 180
+  attackBoxSize: {x: 200, y: 180}
+  attackDamage: 15
+  attackHitTime: 0.15
+  monsterMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
   hitSound1: {fileID: 8300000, guid: fa23883bdf1464043b664e6de9bf9887, type: 3}
   hitSound2: {fileID: 8300000, guid: 2da2f3dbbded75249a455a2e0d5e1d9f, type: 3}
   dashSound: {fileID: 8300000, guid: 2b13b4611f827fe459dc79330d645c87, type: 3}
@@ -4652,6 +4724,37 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &1351796717
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1351796718}
+  m_Layer: 3
+  m_Name: Container
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1351796718
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1351796717}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -48.77, y: -322.8, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 328929370}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1353922619
 GameObject:
   m_ObjectHideFlags: 0
@@ -9002,3 +9105,4 @@ SceneRoots:
   - {fileID: 1315376954}
   - {fileID: 528307766}
   - {fileID: 846356320}
+  - {fileID: 328929370}

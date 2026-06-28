@@ -48,10 +48,13 @@ public class SpawnPoint
     [Tooltip("Радиус активации: спавн при входе игрока")]
     public float activationRadius = 12f;
 
+    [Tooltip("Спавнить сразу при загрузке сцены (игнорирует радиус)")]
+    public bool spawnImmediately;
+
     // Runtime
     [HideInInspector] public List<MonsterAI> aliveMonsters = new List<MonsterAI>();
     [HideInInspector] public float respawnTimer;
-    [HideInInspector] public bool initialSpawnDone;
+    public bool initialSpawnDone;
 }
 
 /// <summary>
@@ -217,7 +220,7 @@ public class MonsterSpawner : MonoBehaviour
 
             // Расстояние до игрока
             float distToPlayer = Vector2.Distance(player.position, sp.position);
-            bool inRange = distToPlayer <= sp.activationRadius;
+            bool inRange = sp.spawnImmediately || distToPlayer <= sp.activationRadius;
 
             if (verboseLogging && !sp.initialSpawnDone && Time.frameCount % 120 == 0)
             {
@@ -227,6 +230,7 @@ public class MonsterSpawner : MonoBehaviour
 
             if (inRange)
             {
+                Debug.Log($"[MonsterSpawner] ✔ Спавн точки[{i}]: {sp.monsterType} Lv{sp.level} (immediate={sp.spawnImmediately} dist={distToPlayer:F1})");
                 sp.initialSpawnDone = true;
                 SpawnMonster(sp, i);
             }

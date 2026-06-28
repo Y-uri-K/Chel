@@ -3,13 +3,14 @@ using UnityEngine;
 public class MonsterHPBar : MonoBehaviour
 {
     [SerializeField] MonsterStats stats;
-    [SerializeField] float worldBarWidth = 250f;
-    [SerializeField] float worldBarHeight = 18f;
-    [SerializeField] float worldOffsetY = 200f;
+    [SerializeField] float barWidth = 1f;
+    [SerializeField] float barHeight = 0.075f;
+    [SerializeField] float yOffset = 0.45f;
 
-    SpriteRenderer fillRenderer;
-    TextMesh hpText;
     SpriteRenderer bgSr;
+    SpriteRenderer fillSr;
+    TextMesh hpText;
+    bool barCreated;
 
     void Awake()
     {
@@ -18,62 +19,74 @@ public class MonsterHPBar : MonoBehaviour
         CreateBar();
     }
 
+    void Start()
+    {
+        // В Start статы уже точно инициализированы
+        if (stats != null)
+            Refresh(stats);
+    }
+
     void CreateBar()
     {
-        float ps = transform.lossyScale.x;
-        float inv = 1f / ps;
+        var col = GetComponent<Collider2D>();
+        Vector3 barWorldPos = transform.position;
+        if (col != null)
+            barWorldPos = new Vector3(col.bounds.center.x, col.bounds.max.y + yOffset, 0f);
+
         var tex = CreateTex();
 
-        var root = new GameObject("HP_Root");
-        root.transform.SetParent(transform, false);
-        root.transform.localPosition = new Vector3(0f, worldOffsetY * inv, 0f);
-        root.transform.localScale = new Vector3(inv, inv, 1f);
-
+        // BG
         var bg = new GameObject("HP_BG");
-        bg.transform.SetParent(root.transform, false);
-        bg.transform.localPosition = new Vector3(-worldBarWidth * 0.5f, 0f, 0f);
-        bg.transform.localScale = new Vector3(worldBarWidth, worldBarHeight, 1f);
+        bg.transform.SetParent(transform, false);
+        bg.transform.position = barWorldPos;
+        bg.transform.localScale = new Vector3(barWidth, barHeight, 1f);
         bgSr = bg.AddComponent<SpriteRenderer>();
         bgSr.sprite = tex;
-        bgSr.color = new Color(0.15f, 0.03f, 0.03f, 0.8f);
-        bgSr.sortingOrder = 25;
+        bgSr.color = new Color(0.1f, 0.02f, 0.02f, 0.85f);
+        bgSr.sortingOrder = 100;
 
+        // Fill — anchored left
         var fill = new GameObject("HP_Fill");
         fill.transform.SetParent(bg.transform, false);
-        fill.transform.localPosition = new Vector3(0.5f, 0f, -0.01f);
+        fill.transform.localPosition = new Vector3(-0.5f, 0f, -0.01f);
         fill.transform.localScale = Vector3.one;
-        fillRenderer = fill.AddComponent<SpriteRenderer>();
-        fillRenderer.sprite = tex;
-        fillRenderer.color = new Color(1f, 0.08f, 0.08f, 1f);
-        fillRenderer.sortingOrder = 26;
+        fillSr = fill.AddComponent<SpriteRenderer>();
+        fillSr.sprite = tex;
+        fillSr.color = new Color(1f, 0.1f, 0.1f, 1f);
+        fillSr.sortingOrder = 101;
 
-        var textGo = new GameObject("HP_Text");
-        textGo.transform.SetParent(root.transform, false);
-        textGo.transform.localPosition = new Vector3(0f, worldBarHeight * 0.5f + 40f, -0.02f);
-        textGo.transform.localScale = Vector3.one * 160f;
-        hpText = textGo.AddComponent<TextMesh>();
-        hpText.fontSize = 42;
+        // Текст
+        var textObj = new GameObject("HP_Text");
+        textObj.transform.SetParent(bg.transform, false);
+        textObj.transform.localPosition = new Vector3(0f, 0f, -0.02f);
+        hpText = textObj.AddComponent<TextMesh>();
+        hpText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        hpText.fontSize = 24;
         hpText.anchor = TextAnchor.MiddleCenter;
+        hpText.alignment = TextAlignment.Center;
         hpText.color = Color.white;
         hpText.fontStyle = FontStyle.Bold;
-        hpText.characterSize = 0.04f;
-        textGo.GetComponent<MeshRenderer>().sortingOrder = 27;
+        hpText.characterSize = 0.008f;
+        textObj.GetComponent<MeshRenderer>().sortingOrder = 102;
 
         stats.OnHealthChanged += Refresh;
-        stats.OnDeath += _ => { bgSr.enabled = false; fillRenderer.enabled = false; hpText.text = ""; };
-        Refresh(stats);
+        stats.OnDeath += _ => { bgSr.enabled = false; fillSr.enabled = false; hpText.text = ""; };
+        barCreated = true;
     }
 
     void Refresh(MonsterStats s)
     {
-        if (!fillRenderer) return;
-        float r = Mathf.Clamp01(s.HealthRatio);
-        fillRenderer.transform.localScale = new Vector3(r, 1f, 1f);
-        fillRenderer.enabled = r > 0f;
+        if (!fillSr || !barCreated) return;
+        float ratio = Mathf.Clamp01(s.HealthRatio);
+        fillSr.transform.localScale = new Vector3(ratio, 1f, 1f);
+        fillSr.transform.localPosition = new Vector3(-0.5f + ratio * 0.5f, 0f, -0.01f);
         if (hpText) hpText.text = $"{s.CurrentHealth}/{s.MaxHealth}";
     }
 
-    void OnDestroy() { if (stats) stats.OnHealthChanged -= Refresh; }
+    void OnDestroy()
+    {
+        if (stats) stats.OnHealthChanged -= Refresh;
+    }
 
     static Sprite CreateTex()
     {

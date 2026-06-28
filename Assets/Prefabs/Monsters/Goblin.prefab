@@ -257,9 +257,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 0}
-  worldBarWidth: 250
-  worldBarHeight: 18
-  worldOffsetY: 200
+  barWidth: 1
+  barHeight: 0.075
+  yOffset: 0.45
 --- !u!60 &5838221483224971432
 PolygonCollider2D:
   m_ObjectHideFlags: 0

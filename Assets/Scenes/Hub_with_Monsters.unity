@@ -961,11 +961,19 @@ MonoBehaviour:
   monsterMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  hitSound1: {fileID: 0}
+  hitSound2: {fileID: 0}
+  dashSound: {fileID: 0}
+  jumpSound: {fileID: 0}
+  landingSound: {fileID: 0}
+  runSound: {fileID: 0}
   groundCheckDistance: 0.35
   groundMask:
     serializedVersion: 2
     m_Bits: 4294967295
   coyoteTime: 0.05
+  bodyColliderOffset: {x: 0, y: 35}
+  bodyColliderSize: {x: 40, y: 70}
   inputActions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 2}
 --- !u!114 &400001015
 MonoBehaviour:
@@ -3534,6 +3542,7 @@ MonoBehaviour:
   optionsBackButton: {fileID: 115537960}
   uiInputActions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 2}
   playerSpawnPosition: {x: 600, y: -248}
+  restartLoadsHubScene: 0
 --- !u!1 &1195441977
 GameObject:
   m_ObjectHideFlags: 0
@@ -3691,6 +3700,7 @@ MonoBehaviour:
   offset: {x: 0, y: 0, z: -10}
   lookUpOffset: 0.35
   smoothTime: 0.12
+  elevationThreshold: 25
   jumpVerticalSmoothTime: 0.06
   groundVerticalSmoothTime: 0.2
   jumpLookAhead: 0.45
@@ -3894,18 +3904,20 @@ MonoBehaviour:
   - position: {x: -665, y: -272.9}
     monsterType: 0
     level: 3
-    respawnDelay: 3
+    respawnDelay: 0
     maxInstances: 1
     activationRadius: 281
+    spawnImmediately: 1
     aliveMonsters: []
     respawnTimer: 0
     initialSpawnDone: 0
   - position: {x: -155, y: -272.9}
     monsterType: 1
     level: 1
-    respawnDelay: 3
+    respawnDelay: 0
     maxInstances: 1
     activationRadius: 281
+    spawnImmediately: 1
     aliveMonsters: []
     respawnTimer: 0
     initialSpawnDone: 0

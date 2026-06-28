@@ -30,6 +30,11 @@ public class PlayerController : MonoBehaviour
 
     [Header("Attack")]
     [SerializeField] float attackDuration = 0.35f;
+    [SerializeField] float attackRange = 180f;
+    [SerializeField] Vector2 attackBoxSize = new Vector2(200f, 180f);
+    [SerializeField] int attackDamage = 15;
+    [SerializeField] float attackHitTime = 0.15f;
+    [SerializeField] LayerMask monsterMask = ~0;
     [SerializeField] AudioClip hitSound1;
     [SerializeField] AudioClip hitSound2;
 
@@ -494,6 +499,15 @@ public class PlayerController : MonoBehaviour
             attackIndex++;
         }
 
+        // Ждём момент "попадания" внутри анимации, затем проверяем хитбокс
+        yield return new WaitForSeconds(attackHitTime);
+        PerformAttackHit();
+
+        // Ждём оставшееся время анимации
+        float remaining = Mathf.Max(0f, attackDuration - attackHitTime);
+        if (remaining > 0f)
+            yield return new WaitForSeconds(remaining);
+
         PlayHitSound(currentAttack);
 
         yield return new WaitForSeconds(attackDuration);
@@ -501,6 +515,56 @@ public class PlayerController : MonoBehaviour
         currentAnimState = PlayerState.IDLE;
     }
 
+    void PerformAttackHit()
+    {
+        var attackOrigin = (Vector2)transform.position + Vector2.right * facing * (attackRange * 0.5f);
+        var hits = Physics2D.OverlapBoxAll(attackOrigin, attackBoxSize, 0f, monsterMask);
+        Debug.Log($"[Player] Атака: hits={hits.Length}, monsterMask={monsterMask.value}, origin={attackOrigin}, box={attackBoxSize}");
+
+        var allHits = Physics2D.OverlapBoxAll(attackOrigin, attackBoxSize, 0f);
+        Debug.Log($"[Player] Всего коллайдеров: {allHits.Length}");
+        foreach (var h in allHits)
+            Debug.Log($"  {h.name} layer={LayerMask.LayerToName(h.gameObject.layer)} ena={h.enabled} trig={h.isTrigger}");
+
+        foreach (var hit in hits)
+        {
+            if (hit == null || hit.transform == transform || hit.transform.IsChildOf(transform))
+                continue;
+
+            var monsterStats = hit.GetComponentInParent<MonsterStats>();
+            if (monsterStats != null && !monsterStats.IsDead)
+            {
+                int damage = Mathf.RoundToInt(attackDamage * (characterStats != null
+                    ? characterStats.PhysicalAttackMultiplier
+                    : 1f));
+                monsterStats.TakeDamage(damage);
+                DamagePopup.Show(hit.bounds.center, damage, Color.red);
+                Debug.Log($"[Player] Удар по {monsterStats.name} на {damage} урона. HP={monsterStats.CurrentHealth}/{monsterStats.MaxHealth}");
+            }
+            else
+            {
+                Debug.Log($"[Player] Коллайдер {hit.name} — нет MonsterStats (parent={hit.transform.parent?.name})");
+            }
+        }
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (bodyCollider == null)
+            bodyCollider = GetComponent<Collider2D>();
+        if (bodyCollider == null)
+            return;
+
+        // Ground check
+        var bounds = bodyCollider.bounds;
+        var origin = new Vector2(bounds.center.x, bounds.min.y + 0.05f);
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(origin, origin + Vector2.down * groundCheckDistance);
+
+        // Attack hitbox
+        Gizmos.color = Color.red;
+        var attackOrigin = (Vector2)transform.position + Vector2.right * facing * (attackRange * 0.5f);
+        Gizmos.DrawWireCube(attackOrigin, attackBoxSize);
     void PlayHitSound(int attackAnimIndex)
     {
         AudioClip clip = attackAnimIndex % 2 == 0 ? hitSound1 : hitSound2;
@@ -543,16 +607,4 @@ public class PlayerController : MonoBehaviour
         visual.localScale = new Vector3(Mathf.Abs(scale.x) * (direction > 0 ? -1f : 1f), scale.y, scale.z);
     }
 
-    void OnDrawGizmosSelected()
-    {
-        if (bodyCollider == null)
-            bodyCollider = GetComponent<Collider2D>();
-        if (bodyCollider == null)
-            return;
-
-        var bounds = bodyCollider.bounds;
-        var origin = new Vector2(bounds.center.x, bounds.min.y + 0.05f);
-        Gizmos.color = Color.green;
-        Gizmos.DrawLine(origin, origin + Vector2.down * groundCheckDistance);
-    }
 }

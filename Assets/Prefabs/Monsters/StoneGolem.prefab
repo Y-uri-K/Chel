@@ -1,0 +1,389 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2131974808517924332
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8659682023567783420}
+  - component: {fileID: 5616035462161949592}
+  - component: {fileID: 7124748970811003077}
+  - component: {fileID: 8352618788703272782}
+  - component: {fileID: 2873785923067515411}
+  - component: {fileID: 1156154838121673459}
+  - component: {fileID: 3833782908343659521}
+  - component: {fileID: 7416482934376912171}
+  - component: {fileID: 3925815551462127256}
+  - component: {fileID: 9079805121132788133}
+  m_Layer: 0
+  m_Name: StoneGolem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8659682023567783420
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2131974808517924332}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 500, y: 500, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &5616035462161949592
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2131974808517924332}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 11
+  m_Sprite: {fileID: -8560309849684146023, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 0.48, y: 0.46}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
+--- !u!50 &7124748970811003077
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2131974808517924332}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 10
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 1
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 4
+--- !u!114 &8352618788703272782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2131974808517924332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 917392f502070d743963402d5b4cc009, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  idleSprites:
+  - {fileID: -8560309849684146023, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -6046458659595260777, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 1173649800062428798, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -860123725841577098, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -3813055091388590313, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 4005584642503194300, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -5864922182809062652, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 1685149231885765072, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -3176853345217540661, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 2048485459801379411, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -8367172310151686402, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 641211195470266963, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  patrolSprites:
+  - {fileID: -8560309849684146023, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -6046458659595260777, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 1173649800062428798, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -860123725841577098, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -3813055091388590313, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 4005584642503194300, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -5864922182809062652, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 1685149231885765072, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -3176853345217540661, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 2048485459801379411, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -8367172310151686402, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 641211195470266963, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  chaseSprites:
+  - {fileID: -8560309849684146023, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -6046458659595260777, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 1173649800062428798, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -860123725841577098, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -3813055091388590313, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 4005584642503194300, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -5864922182809062652, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 1685149231885765072, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -3176853345217540661, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 2048485459801379411, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -8367172310151686402, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 641211195470266963, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  attackSprites:
+  - {fileID: 5843454675534828794, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 670609125882270026, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -761315106012901811, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 5552113074163705689, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 8528229921075886041, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -5807413623714777326, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -1600828173667227398, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  rangedAttackSprites:
+  - {fileID: -2658238592615018928, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 430012622419832342, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 8160223527541946722, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 4634974452296745619, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 8562643062874060627, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 7279306346916546583, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -6718004529940423134, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  immuneSprites:
+  - {fileID: -1534888124912778137, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 3546567556907061481, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 4461269639492484782, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 5540290817328067180, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 62373164838230116, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -6351118420474408438, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 8122818032260553498, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -704407763425790326, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  hurtSprites:
+  - {fileID: -1534888124912778137, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 3546567556907061481, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 4461269639492484782, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 5540290817328067180, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 62373164838230116, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -6351118420474408438, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 8122818032260553498, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -704407763425790326, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  deathSprites:
+  - {fileID: 30030353638796043, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -6797944007051096788, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -1647354200448296128, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -4141932194433881366, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 3367711687325640688, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 3557861557679142728, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 7336441591681928010, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -8913140673661480278, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -3415722039262562659, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -8960834110177813665, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 6443372437513038052, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 5155530248166929132, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: 4970112101262350585, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  - {fileID: -7627331110892968887, guid: 15f39053e80f6fa468c242167ab3e530, type: 3}
+  idleFrameTime: 0.18
+  patrolFrameTime: 0.14
+  chaseFrameTime: 0.1
+  attackFrameTime: 0.12
+  rangedAttackFrameTime: 0.1
+  hurtFrameTime: 0.1
+  deathFrameTime: 0.15
+  spriteDefaultFacesRight: 1
+--- !u!114 &2873785923067515411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2131974808517924332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 590962e6e9beeae4fb3c1888d5111475, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseMaxHealth: 30
+  baseDamage: 8
+  baseMoveSpeed: 1.8
+  baseAttackRange: 1.5
+  baseAttackCooldown: 1.2
+  baseChaseRange: 6
+  basePatrolRange: 4
+  healthPerLevel: 0.25
+  damagePerLevel: 0.18
+  speedPerLevel: 0.05
+  rangePerLevel: 0.03
+  level: 1
+  hitsToActivateImmune: 999
+  hitsToDeactivateImmune: 999
+--- !u!114 &1156154838121673459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2131974808517924332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00c8e496cf148c048915fdfda55e2bd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stats: {fileID: 0}
+  anim: {fileID: 0}
+  rb: {fileID: 0}
+  bodyCollider: {fileID: 0}
+  patrolWaitTime: 1.5
+  patrolPointRadius: 8
+  attackHitMoment: 0.4
+  rangedAttackHitMoment: 0.5
+  rangedProjectilePrefab: {fileID: 0}
+  laserBeamPrefab: {fileID: 3055919112048326682, guid: 9d1e5d34c83e72045b4b397cb983daae, type: 3}
+  rangedAttackRange: 1200
+  rangedAttackCooldown: 10
+  laserDistanceTrigger: 500
+  laserSpawnOffset: {x: 15, y: -110}
+--- !u!60 &3833782908343659521
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2131974808517924332}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5208333, y: -0.65217394}
+    oldSize: {x: 0.48, y: 0.46}
+    newSize: {x: 0.48, y: 0.46}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: -0.25, y: 0.29999995}
+      - {x: -0.25, y: 0.76}
+      - {x: 0.22999999, y: 0.76}
+      - {x: 0.22999999, y: 0.29999995}
+  m_UseDelaunayMesh: 0
+--- !u!114 &7416482934376912171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2131974808517924332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 590962e6e9beeae4fb3c1888d5111475, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseMaxHealth: 250
+  baseDamage: 30
+  baseMoveSpeed: 220
+  baseAttackRange: 145
+  baseAttackCooldown: 2
+  baseChaseRange: 50000
+  basePatrolRange: 1200
+  healthPerLevel: 0.25
+  damagePerLevel: 0.18
+  speedPerLevel: 0.05
+  rangePerLevel: 0.03
+  level: 1
+  hitsToActivateImmune: 999
+  hitsToDeactivateImmune: 999
+--- !u!114 &3925815551462127256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2131974808517924332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 967b2c5a52576564c870f06a0ccc3baa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stats: {fileID: 0}
+  worldBarWidth: 250
+  worldBarHeight: 18
+  worldOffsetY: 200
+--- !u!114 &9079805121132788133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2131974808517924332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 922edc586ab183742b8c363e0dc2b851, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
